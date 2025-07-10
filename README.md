@@ -1,0 +1,241 @@
+# Football Player Tracking with YOLO and OSNet
+
+This project tracks football players, referees, and the ball in a video, assigning consistent IDs to players even when they leave and re-enter the frame. It uses YOLO for detection, ByteTrack for tracking, and OSNet for player re-identification (ReID).
+
+---
+
+## Table of Contents
+- [Features](#features)
+- [YOLOv11l Model Summary](#yolov11l-model-summary)
+- [Setup](#setup)
+- [Usage](#usage)
+- [How It Works](#how-it-works)
+- [Project Structure](#project-structure)
+- [Troubleshooting](#troubleshooting)
+- [Credits](#credits)
+
+---
+
+## Features
+- Detects players, referees, and ball in football videos
+- Assigns unique, consistent IDs to each player (even after occlusion or re-entry)
+- Draws annotations on output video
+- Fast and robust, works on CPU or GPU
+
+---
+
+## YOLOv11l Model Summary
+
+- **Model:** YOLOv11l (fused)
+- **Layers:** 190
+- **Parameters:** 25,282,396
+- **GFLOPs:** 86.6
+
+### Detection Performance (Validation Set)
+| Class        | Images | Instances | Box(P) | Box(R) | mAP50 | mAP50-95 |
+|--------------|--------|-----------|--------|--------|-------|----------|
+| **all**      | 43     | 1025      | 0.885  | 0.756  | 0.821 | 0.566    |
+| **ball**     | 39     | 39        | 0.808  | 0.333  | 0.432 | 0.176    |
+| **goalkeeper** | 32   | 32        | 0.898  | 0.812  | 0.924 | 0.678    |
+| **player**   | 43     | 853       | 0.936  | 0.955  | 0.982 | 0.781    |
+| **referee**  | 43     | 101       | 0.896  | 0.921  | 0.948 | 0.629    |
+
+- **Box(P):** Precision for bounding box
+- **Box(R):** Recall for bounding box
+- **mAP50:** Mean Average Precision at IoU 0.5
+- **mAP50-95:** Mean Average Precision averaged over IoU thresholds from 0.5 to 0.95
+
+---
+
+## Setup
+
+### 1. Clone the Repository
+```bash
+git clone <https://github.com/Zubair-10-eng/Football-Detection-with-ReIDentification.git>
+cd Football Assignment
+```
+
+### 2. Create and Activate a Virtual Environment (Recommended)
+```bash
+python -m venv .venv
+# On Windows:
+.venv\Scripts\activate
+# On Linux/Mac:
+source .venv/bin/activate
+```
+
+### 3. Install Dependencies
+```bash
+pip install -r require.txt
+```
+
+#### Main dependencies:
+- `ultralytics` (YOLO)
+- `torch` and `torchvision`
+- `opencv-python`
+- `supervision`
+- `torchreid` (for OSNet ReID)
+
+If you need to install torchreid manually:
+```bash
+pip install torchreid
+```
+
+### 4. Download/Prepare Models
+- Place your YOLO model (e.g., `last.pt`) in the `custom_model/` directory.
+- OSNet weights are downloaded automatically by torchreid on first use.
+
+### 5. Prepare Input Video
+- Place your input video (e.g., `15sec_input_720p.mp4`) in the `Input videos/` directory.
+
+---
+
+## Usage
+
+### 1. Run the Main Script
+```bash
+python main_file.py
+```
+
+- The script will process the input video, track all players, and save the annotated output to `output_videos/output.avi`.
+
+### 2. Output
+- The output video will show bounding boxes and unique IDs for each player, referee, and the ball.
+
+---
+
+## How It Works
+
+### Detection (YOLO)
+- YOLO detects all players, referees, and the ball in each frame.
+
+### Tracking (ByteTrack)
+- ByteTrack links detections across frames, assigning temporary IDs.
+
+### Re-Identification (OSNet)
+- OSNet extracts appearance features for each player.
+- When a player leaves and re-enters, their features are compared to previous ones.
+- If similarity is high, the same ID is assigned; otherwise, a new ID is given.
+
+### Annotation
+- The system draws ellipses for players, rectangles for IDs, and triangles for the ball.
+
+---
+
+## Project Structure
+```
+Football Assignment/
+├── main_file.py           # Main script to run tracking
+├── require.txt            # Python dependencies
+├── custom_model/          # YOLO model weights
+├── Input videos/          # Input football videos
+├── output_videos/         # Output annotated videos
+├── trackers/
+│   └── trackers.py        # Tracking and ReID logic
+├── utils/
+│   └── ...                # Utility functions (video I/O, etc.)
+└── README.md              # This file
+```
+
+---
+
+## Troubleshooting
+- **No detections?**
+  - Check your YOLO model path and input video format.
+- **OSNet not working?**
+  - Make sure `torchreid` is installed and you have a supported version of PyTorch.
+- **Slow processing?**
+  - Try running on a machine with a GPU, or use a smaller YOLO model.
+- **Output video not saving?**
+  - Check the `output_videos/` directory exists and you have write permissions.
+
+---
+
+## Credits
+- [Ultralytics YOLO](https://github.com/ultralytics/ultralytics)
+- [ByteTrack](https://github.com/ifzhang/ByteTrack)
+- [OSNet / torchreid](https://github.com/KaiyangZhou/deep-person-reid)
+- [Supervision](https://github.com/roboflow/supervision)
+
+---
+
+For questions or issues, please open an issue or contact the project maintainer. 
+
+---
+
+## **How to Fix: Only Track Your Project Files**
+
+### 1. **Go to Your Project Directory**
+Open your terminal and run:
+```bash
+cd "D:\Football Assignment"
+```
+
+### 2. **(Optional but Recommended) Add a `.gitignore` File**
+Create a `.gitignore` file in your project folder to ignore unnecessary files and folders.  
+Add the following lines to `.gitignore`:
+```
+# Ignore Python cache and virtual environments
+__pycache__/
+*.pyc
+.venv/
+env/
+# Ignore VSCode and system files
+.vscode/
+.DS_Store
+*.log
+# Ignore user/system folders (add more as needed)
+AppData/
+OneDrive/
+Contacts/
+Desktop/
+Documents/
+Downloads/
+Favorites/
+Links/
+Music/
+NTUSER.DAT*
+Pictures/
+Saved Games/
+Searches/
+Videos/
+ntuser.*
+```
+You can create this file with Notepad or by running:
+```bash
+notepad .gitignore
+```
+and pasting the above content.
+
+### 3. **Re-initialize Git (if needed)**
+If you previously copied a `.git` folder, delete it and run:
+```bash
+git init
+```
+
+### 4. **Add Only Your Project Files**
+Now run:
+```bash
+git add .
+```
+This will only add files in your project directory, and the `.gitignore` will prevent system/user files from being added.
+
+### 5. **Continue as Usual**
+```bash
+git commit -m "first commit"
+git branch -M main
+git remote add origin https://github.com/Zubair-10-eng/Football-Detection-with-ReIDentification.git
+git push -u origin main
+```
+
+---
+
+## **Summary**
+- Always run git commands from inside your project folder.
+- Use a `.gitignore` to avoid tracking system/user files.
+- Never run `git add .` from your user home directory.
+
+---
+
+**If you follow these steps, the permission errors will be gone and only your project files will be tracked and pushed to GitHub!**  
+If you get another error, paste it here and I’ll help you fix it. 
