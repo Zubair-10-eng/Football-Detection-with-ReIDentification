@@ -95,3 +95,67 @@ pip install torchreid
 
 ### 1. Run the Main Script
 ```
+```
+
+---
+
+## How It Works
+
+The system consists of three main components:
+
+1. **YOLOv11l Detection:**
+   - Uses YOLOv11l (fused) model for real-time detection of players, referees, and the ball.
+   - The model is trained on a custom dataset containing football players, referees, and the ball.
+   - It outputs bounding boxes and class probabilities for each detected object.
+
+2. **ByteTrack Tracking:**
+   - Utilizes ByteTrack for robust multi-object tracking.
+   - It associates detections across frames using appearance features and motion cues.
+   - It maintains unique IDs for each tracked object.
+
+3. **OSNet ReID:**
+   - Applies OSNet (One-Shot Learning for Person Re-Identification) for player re-identification.
+   - It extracts deep features from the player's appearance (e.g., jersey color, texture).
+   - It matches these features to a gallery of previously seen players to assign consistent IDs.
+
+---
+
+## Project Structure
+
+```
+project_root/
+├── custom_model/
+│   └── YOLOv11l_fused.pt
+├── Input videos/
+│   └── 15sec_input_720p.mp4
+├── Output videos/
+│   └── 15sec_output_720p.mp4
+├── .venv/
+├── require.txt
+├── README.md
+└── main.py
+```
+
+---
+
+## Troubleshooting
+
+1. **Model Loading Issues:**
+   - Ensure your YOLO model file (`YOLOv11l_fused.pt`) is in the `custom_model/` directory.
+   - Check if the model file is not corrupted and has the correct extension.
+
+2. **Tracking Discontinuities:**
+   - If players re-enter the frame without being re-detected, ByteTrack might lose track.
+   - This can be mitigated by increasing the detection confidence threshold or improving the ReID model.
+
+3. **Performance:**
+   - The system is optimized for CPU usage. If you need GPU acceleration, ensure your PyTorch installation is compatible.
+   - For best performance, use a high-resolution input video.
+
+---
+
+## Credits
+
+- **YOLOv11l Model:** Developed by Zubair Ahmed (https://github.com/Zubair-10-eng/Football-Detection-with-ReIDentification)
+- **OSNet ReID:** Developed by Yifan Sun, et al. (https://github.com/Zubair-10-eng/Football-Detection-with-ReIDentification)
+- **ByteTrack:** Developed by bytedance (https://github.com/Zubair-10-eng/Football-Detection-with-ReIDentification)
