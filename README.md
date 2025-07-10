@@ -1,5 +1,7 @@
 # Football Player Tracking with YOLO and OSNet
 
+![Football action on the field](images/football.jpg)
+
 This project tracks football players, referees, and the ball in a video, assigning consistent IDs to players even when they leave and re-enter the frame. It uses YOLO for detection, ByteTrack for tracking, and OSNet for player re-identification (ReID).
 
 ---
@@ -19,6 +21,7 @@ This project tracks football players, referees, and the ball in a video, assigni
 ## Features
 - Detects players, referees, and ball in football videos
 - Assigns unique, consistent IDs to each player (even after occlusion or re-entry)
+- Enhanced ReID: Combines color histogram (jersey color) and OSNet deep features for more robust player identity matching
 - Draws annotations on output video
 - Fast and robust, works on CPU or GPU
 
@@ -106,16 +109,21 @@ python main_file.py
 
 ## How It Works
 
+![Sample output with bounding boxes and IDs](images/output.jpg)
+
 ### Detection (YOLO)
 - YOLO detects all players, referees, and the ball in each frame.
 
 ### Tracking (ByteTrack)
 - ByteTrack links detections across frames, assigning temporary IDs.
 
-### Re-Identification (OSNet)
+### Re-Identification (OSNet + Color Histogram)
 - OSNet extracts appearance features for each player.
-- When a player leaves and re-enters, their features are compared to previous ones.
-- If similarity is high, the same ID is assigned; otherwise, a new ID is given.
+- Color histograms (based on jersey color) are computed for each player crop.
+- When a player leaves and re-enters, their color histogram is compared to those of previously tracked players as a fast pre-filter.
+- If the color histogram is similar, OSNet features are then compared for fine-grained matching.
+- If both are similar, the same ID is assigned; otherwise, a new ID is given.
+- This approach improves ID consistency, especially for players on different teams or with similar builds.
 
 ### Annotation
 - The system draws ellipses for players, rectangles for IDs, and triangles for the ball.
