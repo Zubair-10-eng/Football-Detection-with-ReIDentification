@@ -1,7 +1,5 @@
 # Football Player Tracking with YOLO and OSNet
 
-![Football action on the field](images/football.jpg)
-
 This project tracks football players, referees, and the ball in a video, assigning consistent IDs to players even when they leave and re-enter the frame. It uses YOLO for detection, ByteTrack for tracking, and OSNet for player re-identification (ReID).
 
 ---
@@ -96,71 +94,4 @@ pip install torchreid
 ## Usage
 
 ### 1. Run the Main Script
-```bash
-python main_file.py
 ```
-
-- The script will process the input video, track all players, and save the annotated output to `output_videos/output.avi`.
-
-### 2. Output
-- The output video will show bounding boxes and unique IDs for each player, referee, and the ball.
-
----
-
-## How It Works
-
-![Sample output with bounding boxes and IDs](images/output.jpg)
-
-### Detection (YOLO)
-- YOLO detects all players, referees, and the ball in each frame.
-
-### Tracking (ByteTrack)
-- ByteTrack links detections across frames, assigning temporary IDs.
-
-### Re-Identification (OSNet + Color Histogram)
-- OSNet extracts appearance features for each player.
-- Color histograms (based on jersey color) are computed for each player crop.
-- When a player leaves and re-enters, their color histogram is compared to those of previously tracked players as a fast pre-filter.
-- If the color histogram is similar, OSNet features are then compared for fine-grained matching.
-- If both are similar, the same ID is assigned; otherwise, a new ID is given.
-- This approach improves ID consistency, especially for players on different teams or with similar builds.
-
-### Annotation
-- The system draws ellipses for players, rectangles for IDs, and triangles for the ball.
-
----
-
-## Project Structure
-```
-Football Assignment/
-├── main_file.py           # Main script to run tracking
-├── require.txt            # Python dependencies
-├── custom_model/          # YOLO model weights
-├── Input videos/          # Input football videos
-├── output_videos/         # Output annotated videos
-├── trackers/
-│   └── trackers.py        # Tracking and ReID logic
-├── utils/
-│   └── ...                # Utility functions (video I/O, etc.)
-└── README.md              # This file
-```
-
----
-
-## Troubleshooting
-- **No detections?**
-  - Check your YOLO model path and input video format.
-- **OSNet not working?**
-  - Make sure `torchreid` is installed and you have a supported version of PyTorch.
-- **Slow processing?**
-  - Try running on a machine with a GPU, or use a smaller YOLO model.
-- **Output video not saving?**
-  - Check the `output_videos/` directory exists and you have write permissions.
-
----
-
-## Credits
-- [Ultralytics YOLO](https://github.com/ultralytics/ultralytics)
-- [ByteTrack](https://github.com/ifzhang/ByteTrack)
-- [OSNet / torchreid](https://github.com/KaiyangZhou/deep-person-reid)
-- [Supervision](https://github.com/roboflow/supervision) 
